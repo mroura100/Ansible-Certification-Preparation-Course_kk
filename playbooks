@@ -1,0 +1,20 @@
+--ejecutar playbook
+ansible-playbook {{playbook}}
+ansible-playbook {{playbook}} -C
+ansible-playbook {{playbook}} -i {{inventory}}
+
+---playbook ejemplo
+---
+- hosts: web1
+  tasks:
+    - name: Create /tmp/testfile.txt
+      file:
+        path: /tmp/testfile.txt
+        state: touch
+
+- hosts: web2
+  tasks:
+    - name: Create /tmp/testfile.txt
+      file:
+        path: /tmp/testfile.txt
+        state: touch
