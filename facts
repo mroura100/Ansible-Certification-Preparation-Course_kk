@@ -1,0 +1,15 @@
+---
+- hosts: db1
+  tasks:
+    - name: Get server architecture
+      debug:
+        var: ansible_facts.architecture
+        
+        
+  ---ver todos los facts
+  ---
+- hosts: web1
+  tasks:
+    - name: Get all the facts on web1
+      debug:
+        var: ansible_facts
