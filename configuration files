@@ -1,0 +1,18 @@
+--Archivo de configuración---
+/etc/ansible/ansible.cfg
+
+$ANSIBLE_CONFIG=/opt/ansible-web.cfg ansible-playbook playbook.yml
+$ANSIBLE_GATHERING=explicit ansible-playbook playbook.yml
+
+--podemos exportar la variable de entorno en nuestra sesión linux
+export ANSIBLE_CONFIG=/opt/ansible-web.cfg 
+ansible-playbook playbook.yml
+
+-- listar toda la configuración
+ansible-config list
+
+-- muestra el config file actual
+ansible-config view
+
+-- shows the current settings
+ansible-config dump
