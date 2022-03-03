@@ -1,0 +1,2 @@
+ansible -a 'date' -i /home/thor/playbooks/inventory localhost
+ansible -m ping all
