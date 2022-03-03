@@ -1,0 +1,7 @@
+ansible -m ping all -->comprueba que todas las maquinas den connexión
+
+ansible -a 'cat /etc/hosts' all
+
+ansible -a 'yum install nginx' all
+  --become
+  --become-user nginx
