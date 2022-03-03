@@ -1,0 +1,8 @@
+---Instalar Ansible---
+yum -y install epel-repo
+yum update -y
+yum install ansible --> centOS
+dnf install ansible --> fedora
+apt-get install ansible --> ubuntu
+sudo pip install ansible --> python
+
