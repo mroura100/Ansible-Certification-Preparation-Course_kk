@@ -1,2 +1,4 @@
 ansible -a 'date' -i /home/thor/playbooks/inventory localhost
 ansible -m ping all
+ansible all -a "hostname" -i inventory
+ansible node00 -m copy -a "src=/etc/resolv.conf dest=/tmp/resolv.conf" -i inventory
