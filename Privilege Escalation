@@ -1,1 +1,19 @@
-d
+---
+- hosts: web1
+  become: yes
+  tasks:
+    - name: Install nginx
+      yum:
+        name: nginx
+        state: latest
+        
+------ /etc/anisble/ansible.cfg----
+become = True
+become_method = doas
+become_user = nginx
+
+---inventory---
+web01 ansible_host=192.168.1.34 ansible_user=admin ansible_become=yes ansible_become_user=nginx
+
+---command line---
+ansible-playbook --become --become-method=doas --become-user=nginx --ask-become-pass
