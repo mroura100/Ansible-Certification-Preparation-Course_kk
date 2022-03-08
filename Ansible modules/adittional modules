@@ -1,0 +1,61 @@
+el módulo yum para rhel y el módulo apt para ubuntu se pueden sustituir por el módulo package i ansible ya decidirá si es yum o apt
+
+---Firewall module--
+---
+- name: Add firewalld rules
+  hosts: all
+  tasks: 
+  - firewalld:
+      port: 8080/tcp
+      service: http
+      source: 192.0.0.0/24
+      zone: public
+      state: enabled
+      permanent: yes
+      immediate: yes
+      
+      
+ ----- modulo lvg y lvol para crear logical volumes i logical volume groups
+ ---
+
+- hosts: all
+  - name: Crear LVM volume group
+    tasks: 
+    - lvg:
+        vg: vg01
+        pvs: /dev/sdb1,/dev/sdb2
+      
+  - name: Crear LVM volume
+    lvol:
+    vg: vg01
+    lv: lvol1
+    size: 2g
+ 
+ ---- Módulo filesystem---
+- hosts: all
+  tasks: 
+  - name: Crear LVM volume group
+    filesystem:
+      fstype: ext4
+      dev: /dev/vg01/lvol1
+      opts: -cc
+      
+ ---- Módulo mount filesystem---
+- hosts: all
+  tasks: 
+  - name: montar FS
+    mount:
+      fstype: ext4
+      src: /dev/vg01/lvol1
+      path: /opt/app
+      state: mounted
+      opts: -cc
+      
+      
+      
+ 
+ 
+ 
+ 
+ 
+ 
