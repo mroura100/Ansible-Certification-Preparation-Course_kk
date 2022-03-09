@@ -51,7 +51,82 @@ el módulo yum para rhel y el módulo apt para ubuntu se pueden sustituir por el
       state: mounted
       opts: -cc
       
+--- Módulo para crear ficheros y directorios ---
+- hosts: all
+  tasks: 
+  - name: Crear directorio
+    file:
+      path: /opt/app/web
+      state: directory
       
+   
+  - name: Crear fichero
+    file:
+      path: /opt/app/web/index.html
+      state: touch
+      owner: app-owner
+      group: app-owner
+      mode: '0644'
+      
+--- Módulo para comprimir un fichero o directorio
+- hosts: all
+  tasks: 
+  - name: Crear directorio
+    archive:
+      path: /opt/app/web
+      dest: /tmp/web.gz
+      format: zip|gz|tar.gz|xz|bz2
+      
+      
+--- Módulo para descomprimir
+- hosts: all
+  tasks: 
+  - name: Crear directorio
+    unarchive:
+      src: /tmp/web.gz
+      dest: /opt/app/web
+      remote_src: yes
+      
+--- Módulo cron
+- hosts: all
+  tasks: 
+  - name: Crear directorio
+    cron: Create a scheduled task
+      name: Run daily hearth report
+      job: sh /opt/scripts/health.sh
+      month: 2 
+      day: 19
+      hour: 8
+      minute: 10 --> si queremos ejecutar un cron cada 2 minutos dberemos pner /2
+      weekday: *
+      
+--- Módulo usuarios y grupos
+- hosts: all
+  tasks: 
+  - name: Crear usuario
+    user:
+      name: maria
+      uid: 1001
+      group: developers
+      shell: /bin/bash
+      
+   
+  - name: Crear grupo
+    group:
+      name: developers
+      
+      
+--- Módulo autorizar ssh keys
+- hosts: all
+  tasks: 
+  - name: Configure ssh keys
+    authorized_keys:
+      user: maria
+      state: present
+      key: {{ponemos la key}}
+      
+
+
       
  
  
