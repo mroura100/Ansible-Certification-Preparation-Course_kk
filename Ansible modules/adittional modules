@@ -1,5 +1,46 @@
 el módulo yum para rhel y el módulo apt para ubuntu se pueden sustituir por el módulo package i ansible ya decidirá si es yum o apt
 
+--- Módulo package
+---
+- hosts: web1
+  tasks:
+    - name: Install nginx
+      package:
+        name:
+         - nginx
+        state: latest
+
+
+--- Módulo yum
+---
+- hosts: web1
+  tasks:
+    - name: Install a list of packages (suitable replacement for 2.11 loop deprecation warning)
+      yum:
+        name:
+          - httpd
+          - http://mirror.centos.org/centos/7/os/x86_64/Packages/wget-1.14-18.el7_6.1.x86_64.rpm
+          - vsftpd-2.2.2 "Instlaamos version específica"
+        state: present
+
+---------------OTRO EJEMPLO----------
+---
+- hosts: web1
+  tasks:
+    - name: Install sudo
+      yum:
+        name:
+          - sudo
+        state: latest
+    - name: Install vsftpd-2.2.2
+      yum:
+        name:
+          - vsftpd-2.2.2 "BAJAMOS LA VERSIÓN DEL PAQUETE VSFTPD"
+        state: present
+        allow_downgrade: yes
+
+
+
 ---Firewall module--
 ---
 - name: Add firewalld rules
@@ -126,7 +167,15 @@ el módulo yum para rhel y el módulo apt para ubuntu se pueden sustituir por el
       key: {{ponemos la key}}
       
 
-
+---Módulo para servicios--
+---
+- hosts: web1
+  tasks:
+    - name: Start httpd service
+      service:
+        name: httpd
+        state: started | restarted (para reiniciar el servicio) | reloaded (recarga le servicio para laplicar nuevas configuraciones)
+        enabled: yes "el servicio se iniciará en cada reinicio"
       
  
  
