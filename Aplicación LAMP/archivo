@@ -239,7 +239,131 @@ Playbook: ~/playbooks/lamp-stack-playbooks/deploy-lamp-stack.yml
       shell: mysql -f < /tmp/db-load-script.sql
       
       
+1. Install Web Server
+Install httpd, php and php-mysql packages
+
+2. Install Git to download source code
+package: git
+
+3. Start and enable the firewalld service
+4. Insert firewalld rule for httpd
+For port use httpd_port/tcp variable.
+
+4. Set index.php as the default page
+Modify line "DirectoryIndex index.html" to "DirectoryIndex index.php" in file /etc/httpd/conf/httpd.conf
+
+5. Start and enable the httpd service
+Playbook: ~/playbooks/lamp-stack-playbooks/deploy-lamp-stack.yml
 
 
+--- 
+- hosts: all
+  become: true
+  tasks:
+    - name: Install common dependencies
+      package:
+        name:
+         - libselinux-python
+         - libsemanage-python
+         - firewalld
+        state: latest
+
+
+- hosts: lamp-db
+  become: true
+  tasks:
+    - name: Install MariaDB
+      package:
+        name:
+         - mariadb-server
+         - MySQL-python
+        state: latest
+
+    - name: Copy the MySQL Configuration file
+      copy:
+        src: files/my.cnf
+        dest: /etc/my.cnf
+
+    - name: Start mariadb service
+      service:
+        name: mariadb
+        state: started
+        
+    - name: Start firewalld service
+      service:
+        name: firewalld
+        state: started  
+    
+	- name: Insert firewalld rule
+	  firewalld
+	    port: 3306/tcp
+        zone: public
+        state: enabled
+        permanent: yes
+        immediate: yes
+		
+    - name: Create Application Database
+      mysql_db:  
+        name={{ dbname }}  
+        state=present
+    
+    - name: Create database user
+     mysql_user:
+       name: {{dbuser}}
+       password: {{dbpassword}}
+       priv: '*.*:ALL'
+       host: 172.20.1.100
+       state: present    
+
+   - name: Copy db-load-script.sql file to /tmp directory on the database server
+     copy:
+       src: db-load-script.sql
+       dest: /tmp
+
+   - name: Load Inventory data by running the below shell command on the database server
+     shell: mysql -f < /tmp/db-load-script.sql
+	 
+	 
+###webserver
+- hosts: lamp-web
+  become: true
+  tasks:
+    - name: Install Web Server and git
+      package:
+        name:
+         - httpd
+         - php
+         - php-mysql
+         - git
+        state: latest
+
+    - name: Start firewalld service
+      service:
+        name: firewalld
+        state: started
+        enabled: yes
+
+    - name: Insert firewalld rule
+      firewalld
+        port={{ httpd_port }}/tcp
+        zone: public
+        state: enabled
+        permanent: yes
+        immediate: yes
+
+    - name: Set index.php as the default page
+      replace:
+        path: /etc/httpd/conf/httpd.conf
+        regexp: 'DirectoryIndex index.html'
+        replace: 'DirectoryIndex index.php'
+
+
+    - name: Start and enable the httpd service
+      service:
+        name: httpd
+        state: started
+        enabled: yes
+	   
+	
 
 
