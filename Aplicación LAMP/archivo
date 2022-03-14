@@ -139,11 +139,13 @@ Playbook: ~/playbooks/lamp-stack-playbooks/deploy-lamp-stack.yml
       service:
         name: mariadb
         state: started
+	enabled: yes
         
     - name: Start firewalld service
       service:
         name: firewalld
         state: started  
+	enabled: yes
     
     - name: Insert firewalld rule
       firewalld:
