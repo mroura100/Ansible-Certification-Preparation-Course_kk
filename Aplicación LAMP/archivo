@@ -145,9 +145,9 @@ Playbook: ~/playbooks/lamp-stack-playbooks/deploy-lamp-stack.yml
         name: firewalld
         state: started  
     
-	- name: Insert firewalld rule
-	  firewalld
-	    port: 3306/tcp
+    - name: Insert firewalld rule
+      firewalld:
+	port: 3306/tcp
         zone: public
         state: enabled
         permanent: yes
