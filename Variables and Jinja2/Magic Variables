@@ -1,0 +1,37 @@
+---
+- name: print_dns server
+  hosts: all
+  tasks:
+    - shell: "echo {{hostvars['node01.host'].dns_server}} >> /tmp/variable.txt"
+    
+ 
+ ---------------------------------------
+ We have a template ~/playbooks/templates/hostinfo.j2 in which some values need to be updated. There is a playbook ~/playbooks/hostinfo.yml 
+ to copy this template to /root/hostinfo destination on node00 managed node. In the template update values for full inventory hostname, short inventory hostname and inventory file.
+
+----- template jinja2  playbooks/templates/hostinfo.j2---------
+This is my full inventory hostname {{inventory_hostname}} #Fill variable for full inventory hostname
+This is my short inventory hostname {{inventory_hostname_short}} #Fill variable for short inventory hostname
+This is my inventory file {{inventory_file}} #Fill variable for inventory file
+
+----- playbook /playbooks/hostinfo.yml  ---------
+---
+- hosts: node00.host
+  gather_facts: false
+  tasks:
+    - name : hostinfo
+      template:
+        src: hostinfo.j2
+        dest: /root/hostinfo
+        
+------- We have a playbook ~/playbooks/hosts.yml to add some entries in /etc/hosts file on node00.host managed node. It has a missing variable for inventory hostname of the node. Add the variable and run the playbook.
+Note: If IP address of the node is 1.1.1.1 then, the final entry in /etc/hosts file should look like:
+node00.host 1.1.1.1
+--------------playbooks/hosts.yml---------------------
+---
+- hosts: node00.host
+  gather_facts: yes
+  tasks:
+  - shell: "echo  {{ inventory_hostname }} {{ ansible_default_ipv4.address }} >> /etc/hosts"
+        
+ 
