@@ -1,1 +1,84 @@
+vi /etc/anisble/hosts
 
+web1 ansible_host=172.20.1.100
+web2 ansible_host=172.20.1.101
+web3 ansible_host=172.20.1.102
+
+[web_servers]
+web1
+web2
+web3
+
+[web_servers:var]
+dns_server=10.5.5.3
+
+-----with ansible-playbook command-------
+ansible-playbook playbook.yml --extra-vars="dns_server=10.5.5.6"
+
+---vars in playbook.yml----
+- hosts: lamp-web
+  vars
+    dns_server:10.5.5.5
+  become: true
+  tasks:
+  - nsupdate:
+      server: '{{ dns_server }}'
+      
+--- Register Output Scope ---
+name: Chek /etc/hosts file
+- hosts: lamp-web
+  become: true
+  tasks:
+  - shell: cat /etc/hosts
+    register: result 
+  - debug:
+    var: result
+    
+-----Register Output Scope with ansible-playbook command-------
+ansible-playbook playbook.yml -i inventory -v
+
+------- Trabajar con variable REGISTER ----------
+---
+- hosts: all
+  gather_facts: no
+  tasks:
+    - name: stat module help to find the file info
+      stat:
+        path: /var/run
+      register: your_variable
+
+    # for your reference, check the outputs of these
+    - debug: var=your_variable.stat
+
+    # your code goes here...
+    - shell: echo "{{your_variable.stat}}" > /tmp/by_ansible
+    
+--- otro ejemplo de REGISTER -----
+[thor@ansible-controller playbooks]$ cat uptime.yml 
+- hosts: all
+  tasks:
+     - shell: uptime
+       register: uptime_result
+
+     # one of the following option is a correct answer:
+     # - debug: var=uptime_result.output
+     # - debug: msg=uptime_result.stdout
+     # - debug: msg=uptime_result.stdoutput
+     - debug: var=uptime_result.stdout
+     
+ --------Saber la versión del SO utilizado por los servidores--------------------------------------
+ ---
+- name: help me fix it playbook
+  hosts: all
+  gather_facts: no
+  tasks:
+    - name: alternative way to gather facts about remote host
+      setup: filter='ansible_dist*'
+      register: facts
+    - debug: var=facts.ansible_facts.ansible_distribution
+    - shell: echo "{{facts.ansible_distribution}}" > /tmp/output.txt
+     
+
+~       
+    
+      
