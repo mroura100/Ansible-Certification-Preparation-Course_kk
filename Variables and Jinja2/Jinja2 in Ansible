@@ -1,1 +1,46 @@
-d
+--- Develop a jinja2 expression to print the given words in a new line. Use Jina2 Blocks ---
+{
+  "names": [
+    "Alpha",
+    "Beta",
+    "Charlie",
+    "Delta",
+    "Echo"
+  ]
+}
+
+SOLUTION:
+{% for name in names -%}
+{{ name }}
+{% endfor %}
+
+OUTPUT:
+Alpha
+Beta
+Charlie
+Delta
+Echo
+
+--- Develop a jinja2 expression to generate a resolv.conf file using the given name server details. Use Jina2 Blocks ---
+{
+  "name_servers": [
+    "10.1.1.5",
+    "10.1.1.6",
+    "10.1.1.8",
+    "10.8.8.1",
+    "8.8.8.8"
+  ]
+}
+
+SOLUTION:
+{% for name_server in name_servers -%}
+nameserver {{ name_server }}
+{% endfor %}
+
+OUTPUT:
+nameserver 10.1.1.5
+nameserver 10.1.1.6
+nameserver 10.1.1.8
+nameserver 10.8.8.1
+nameserver 8.8.8.8
+
