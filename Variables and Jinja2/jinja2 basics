@@ -28,3 +28,17 @@ SOLUTION:
 
 OUTPUT:
 Title Of Books Are Usually Title Cased
+
+
+--- Update the jinja2 expression to display the correct name in the `dialogue` `Replace` the wrong name with the right name ---
+{
+  "dialogue": "The name is Bourne, James Bourne!"
+}
+
+SOLUTION:
+{{ dialogue | replace('Bourne', 'Bond') }}
+
+OUTPUT:
+The name is Bond, James Bond!
+
+
