@@ -80,7 +80,53 @@ OUTPUT:
 17
 
 
+--- You are given an array of words. Use a Jinja2 expression to join them to form a single sentence. ---
+{
+  "words": [
+    "we",
+    "are",
+    "meant",
+    "to",
+    "be",
+    "together"
+  ]
+}
 
+SOLUTION:
+{{ words | join(' ') }}
+
+OUTPUT:
+we are meant to be together
+
+--- That was actually a movie name. Make sure its shown in title case. ---
+{
+  "words": [
+    "we",
+    "are",
+    "meant",
+    "to",
+    "be",
+    "together"
+  ]
+}
+
+SOLUTION:
+{{ words | join(' ') | title }}
+
+OUTPUT:
+We Are Meant To Be Together
+
+
+--- Use a Jinja2 expression to count the number of words. ---
+{
+  "words": "Everyone was busy, so I went to the movie alone. I was very proud of my nickname throughout high school but today- I couldn’t be any different to what my nickname was. Wow, does that work? She works two jobs to make ends meet; at least, that was her reason for not having time to join us."
+}
+
+SOLUTION:
+{{ words | wordcount }}
+
+OUTPUT:
+58
 
 
 
