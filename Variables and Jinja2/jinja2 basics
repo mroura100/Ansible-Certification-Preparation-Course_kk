@@ -41,4 +41,46 @@ SOLUTION:
 OUTPUT:
 The name is Bond, James Bond!
 
+--- Use a Jinja2 expression to display the highest number in the given array ---
+{
+  "numbers": [
+    13,
+    32,
+    53,
+    34,
+    25,
+    76,
+    17
+  ]
+}
+
+SOLUTION:
+{{ numbers | max }}
+
+OUTPUT:
+76
+
+--- Use a Jinja2 expression to display the last number in the given array ---
+{
+  "numbers": [
+    13,
+    32,
+    53,
+    34,
+    25,
+    76,
+    17
+  ]
+}
+
+SOLUTION:
+{{ numbers | last }}
+
+OUTPUT:
+17
+
+
+
+
+
 
