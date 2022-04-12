@@ -1,1 +1,30 @@
-k
+--- official web ---
+https://jinja.palletsprojects.com/en/3.1.x/
+
+--- Develop a Jinja2 Expression to use the variable `name` that generates the expected output.---
+VARIABLES
+{
+  "name": "Bond"
+}
+
+SOLUTION:
+The name is {{ name }}
+
+OUTPUT:
+The name is Bond
+
+--- Update the jinja2 expression to display the `name` in UPPERCASE ---
+The name is {{ name | upper }}
+The name is BOND
+
+--- Update the jinja2 expression to display the `book_name` in title case ---
+VARIABLE:
+{
+  "book_name": "Title of books are usually title cased"
+}
+
+SOLUTION:
+{{ book_name | title }}
+
+OUTPUT:
+Title Of Books Are Usually Title Cased
