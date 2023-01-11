@@ -6,13 +6,14 @@
   vars:
     dir_scripts: "/home/ansible/"
     ver_test: "9.0.1"
-    dir_tmp_repo: /serveis/marc/update_tomcat/new_version_{{ ver_to_update | trim }}/apache-tomcat-9.0.68/
-    dir_backup_tomcat: /serveis/marc/update_tomcat/backup_tomcat_{{ current_version.stdout_lines[1] | trim }}
-    dir_tomcat: /opt/jws/tomcat
-    dir_jws: /opt/jws/
+    dir_tmp_repo: /serveis/marc/update_tomcat/new_version_{{ ver_to_update | trim }}/apache-tomcat-{{ ver_to_update  }}/
+    dir_backup_tomcat: /serveis/marc/update_tomcat/backup_tomcat_{{ current_version.stdout | trim }}
+    dir_tomcat: "{{ catalina_home.stdout}}"
+    dir_buscar_llibreries: "{{ dir_backup_tomcat }}/{{ home.stdout }}/lib"
+    dir_jws: "{{ jws.stdout_lines[0] }}"
     dir_instancia_lib: /opt/jws/instancia/lib/
-    #ver_actual: "{{ current_version.stdout_lines[1] | trim }}"
-    ver_actual: "{{ current_version.stdout_lines[1] }}"
+    ver_actual: "{{ current_version.stdout }}"
+    #ver_actual: "{{ current_version.stdout_lines[1] }}"
     ver_actual_major: "{{ ver_actual.split('.')[0]}}.{{ ver_actual.split('.')[1]}}"
     ver_actual_minor: "{{ ver_actual.split('.')[2]}}"
     ver_nova: "{{ ver_to_update }}"
@@ -24,8 +25,15 @@
     #   debug:
     #     var: ansible_facts
     #     # msg: "'{{ lookup('env', 'HOME') }}' is the HOME environment variable."
+
+    - name: Obtenim el CATALINA_HOME
+      remote_user: tomcat
+      shell: "source /home/tomcat/.bash_profile;echo $CATALINA_HOME"
+      register: catalina_home
+
+
     - name: busquem la versió del tomcat
-      script: "{{ dir_scripts }}check_version.sh"
+      shell: "{{ dir_tomcat }}/bin/catalina.sh version  |grep -i 'server number' | awk -F ':' '{print $2}'| rev | cut -d/ -f2- | rev | xargs"
       register: current_version
       vars:
 
@@ -33,10 +41,29 @@
       debug:
         msg: "{{ ver_actual }}"
 
-    - name: Obtenim el nom  de la instancia del Tomcat
+    - name: Obtenim el nom  del directori del Tomcat
       remote_user: tomcat
-      shell: "source /home/tomcat/.bash_profile;echo $CATALINA_BASE | cut -d/ -f4"
-      register: instancia
+      shell: "source /home/tomcat/.bash_profile;echo $CATALINA_HOME | cut -d/ -f4"
+      register: home
+
+    #- name: Obtenim el CATALINA_HOME
+    #  remote_user: tomcat
+    #  shell: "source /home/tomcat/.bash_profile;echo $CATALINA_HOME"
+    #  register: catalina_home
+
+
+    - name: valors Catalina_home
+      debug:
+        msg: "{{ home.stdout  }}"
+
+    - name: obtenim el directori jws
+      remote_user: tomcat
+      shell: source /home/tomcat/.bash_profile;echo $CATALINA_HOME | awk -F "/" '{print $1"/"$2"/"$3"/"}'
+      register: jws
+
+    - name: valors dir_jws
+      debug:
+        msg: "{{ jws.stdout_lines[0] }}"
 
 
     - name: Comprova si s'ha d'actualitzar.
@@ -53,7 +80,7 @@
 
         - name: Descarregem la versió correcte del repositori.
           get_url:
-            url: "https://archive.apache.org/dist/tomcat/tomcat-9/v9.0.68/bin/apache-tomcat-{{ ver_to_update }}.zip"
+            url: "http://192.168.1.110/repositorios/tomcat/apache-tomcat-{{ ver_to_update }}.zip"
             dest: "{{ dir_tmp_repo }}/tomcat_{{ ver_to_update }}.zip"
             #username: itm
             #password: monitor@ibm2014
@@ -83,8 +110,8 @@
             path: "{{ dir_backup_tomcat }}"
             state: directory
 
-        - name: Copiem la carpeta /opt/jws/ a la carpeta {{ dir_backup_tomcat }}
-          become: true
+        - name: Copiem la carpeta {{ dir_jws }} a la carpeta {{ dir_backup_tomcat }}
+          #become: true
           copy:
             src: "{{ dir_jws }}"
             remote_src: yes
@@ -108,9 +135,9 @@
             group: tomcat
 
 
-        - name: Sobreescrivim fitxsers amb els de la versió anterior {{ current_version.stdout_lines[1] | trim }}
+        - name: Sobreescrivim fitxsers amb els de la versió anterior {{ current_version.stdout | trim }}
           copy:
-            src: "{{ dir_backup_tomcat }}/tomcat"
+            src: "{{ dir_backup_tomcat }}/{{ home.stdout }}"
             dest: "{{ dir_jws }}"
             remote_src: yes
             force: no # amb el no, assegurem que no sobreescriu in fitxer que ja existeix.
@@ -126,9 +153,10 @@
             recurse: yes
 
 
-        - name: Busquem les llibreries ojdbc* mod* mssql* i db2*
+        - name: Busquem les llibreries ojdbc* mod* mssql* i db2* a {{ home.stdout }}
           find:
-            paths: /serveis/marc/update_tomcat/backup_tomcat_9.0.7/tomcat/lib/
+            #paths: /serveis/marc/update_tomcat/backup_tomcat_9.0.7/tomcat/lib/
+            paths: "{{ dir_buscar_llibreries }}"
             patterns: 'ojdbc*,mod*,mssql*,db2*'
           register: file_to_copy
 
