@@ -1,0 +1,4 @@
+--- Crear ansible role ---
+ansible-galaxy init {{nombre del role}}
+
+https://www.cherryservers.com/blog/ansible-roles-tutorial
