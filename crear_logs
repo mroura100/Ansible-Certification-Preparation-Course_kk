@@ -1,0 +1,20 @@
+- name: test playbook
+  become: true
+  hosts: all
+  vars:
+    logfile: "/tmp/logfile"
+    loghost: "localhost"
+  tasks:
+    - command: "echo {{ inventory_hostname }}"
+      register: output
+
+    - command: "zypper up -y"
+      register: zypper_output
+      
+    - name: Copy output to file
+      copy:
+        dest: "{{logfile }}"
+        content: "{{ output.stdout }}
+                  {{ zypper_output.stdout }}
+                  ----------------------"
+      delegate_to: "{{ loghost }}"
